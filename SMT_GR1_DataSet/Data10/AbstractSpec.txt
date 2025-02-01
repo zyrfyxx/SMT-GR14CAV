@@ -1,9 +1,7 @@
 spec ComfortZone			
 			
-env boolean boolVar_1154123508;
 env boolean boolVar_1744027187;
 env boolean boolVar_54854665;
-env boolean boolVar_535049014;
 
 
 
@@ -17,8 +15,5 @@ gar ini ac_on = false;
 
 
 
-
-gar pRespondsToS(boolVar_535049014, ac_on);
-gar pRespondsToS(boolVar_1154123508, !ac_on);
 gar pRespondsToS(boolVar_1744027187, ac_on);
 gar pRespondsToS(boolVar_54854665, !ac_on);

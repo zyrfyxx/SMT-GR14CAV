@@ -1,5 +1,4 @@
 desired_temp_max:int
 desired_temp_min:int
 current_temp:int
-ext_temperature:int
 ac_on:boolean

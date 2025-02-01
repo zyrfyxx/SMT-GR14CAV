@@ -219,8 +219,7 @@ class Spec:
 
 def SpecInit():
     specList = []
-    # DataSetDir = "/app/SMT_GR1_DataSet"
-    DataSetDir = "C:\\Users\\kokaze\\Desktop\\smt-0B39\\SMT_GR1_DataSet\\"
+    DataSetDir = "/app/SMT_GR1_DataSet"
     dataNameList = os.listdir(DataSetDir)
     for dataName in dataNameList:
         if dataName.startswith("Data"):

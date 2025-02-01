@@ -1,5 +1,4 @@
 desired_temp_max:env
 desired_temp_min:env
 current_temp:env
-ext_temperature:env
 ac_on:sys

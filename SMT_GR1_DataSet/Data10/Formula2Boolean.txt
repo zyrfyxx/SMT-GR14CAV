@@ -1,4 +1,2 @@
 current_temp<desired_temp_min-2:boolVar_1744027187
-ext_temperature<desired_temp_min-1:boolVar_535049014
-ext_temperature>desired_temp_max+1:boolVar_1154123508
 current_temp>desired_temp_max+2:boolVar_54854665
