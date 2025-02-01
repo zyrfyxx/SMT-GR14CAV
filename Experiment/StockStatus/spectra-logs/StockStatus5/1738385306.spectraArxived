@@ -1,0 +1,39 @@
+spec StockStatus5
+
+-- 生产者-消费者问题可综合的GR(1)规约
+
+-- 环境变量声明（环境在每个周期选择生产/消费量）
+env Int(0..10) produced;  -- 环境控制的生产量
+env Int(0..10) consumed;  -- 环境控制的消费量
+
+-- 系统变量声明（系统需要控制的库存状态）
+sys {LOW, OK, HIGH} stockStatus;
+gar ini stockStatus = OK;  -- 初始库存状态
+
+-- 系统保证规则（使用next明确时序逻辑）
+gar alw (
+    -- 规则1：当消费量激增时强制降级
+    (consumed >= produced + 2) -> next(stockStatus) = LOW
+);
+
+gar alw (
+    -- 规则2：当生产过剩时保持正常状态
+    (produced > consumed) -> next(stockStatus) = OK
+);
+
+gar alw (
+    -- 规则3：防止库存虚高
+    (produced >= consumed) -> next(stockStatus) != HIGH
+);
+
+gar alw (
+    -- 规则4：处理边际消费情况（消费量超过但不足+2）
+    (consumed >= produced) & (consumed < produced + 2)
+    -> (next(stockStatus) = LOW | next(stockStatus) = OK)
+);
+
+gar alw (
+    -- 规则5：状态保持约束（当条件不满足任何转移时保持状态）
+    !(consumed >= produced + 2) & !(produced > consumed)
+    -> next(stockStatus) = stockStatus
+);

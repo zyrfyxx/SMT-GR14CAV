@@ -1,9 +1,9 @@
-spec StockStatus15
-
-env Int(0..15) produced;
-env Int(0..15) consumed;
+spec StockStatus5
 
 
+
+env Int(0..10) produced;  
+env Int(0..10) consumed; 
 
 
 sys {LOW, OK, HIGH} stockStatus;

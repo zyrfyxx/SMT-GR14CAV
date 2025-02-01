@@ -1,16 +1,21 @@
 spec StockStatus		
 			
-env int produced;
-env int consumed;
+env int produced;  
+env int consumed; 
 
 
 sys {LOW, OK, HIGH} stockStatus;
-gar ini stockStatus=OK; 
+gar ini stockStatus = OK;  
 
 
-gar alw (produced > consumed) -> (stockStatus != LOW);
+gar alw (consumed >= produced + 2) -> next(stockStatus) = LOW;
 
+gar alw    (produced > consumed) -> next(stockStatus) = OK;
 
-gar alw (consumed >= produced + 2) -> (stockStatus = LOW);
+gar alw    (produced >= consumed) -> next(stockStatus) != HIGH;
 
-gar alw (produced >= consumed) -> (stockStatus != HIGH);
+gar alw  (consumed >= produced) & (consumed < produced + 2)
+    -> (next(stockStatus) = LOW | next(stockStatus) = OK);
+
+gar alw   !(consumed >= produced + 2) & !(produced > consumed)
+    -> next(stockStatus) = stockStatus;
