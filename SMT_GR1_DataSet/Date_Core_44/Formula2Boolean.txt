@@ -1,0 +1,4 @@
+x+y=15:boolVar_816092869
+a>=2.5:boolVar_1458814567
+y-x<=5:boolVar_785647056
+x*a>20:boolVar_817730387

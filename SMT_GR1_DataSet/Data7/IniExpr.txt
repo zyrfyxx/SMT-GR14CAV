@@ -1,0 +1,4 @@
+obstacleX=2
+robotX=1
+obstacleY=2
+robotY=1

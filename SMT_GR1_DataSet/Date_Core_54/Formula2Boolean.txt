@@ -1,0 +1,4 @@
+y*b+z*c=30.0:boolVar_1469109155
+a-b<=5.5:boolVar_1399808357
+x*a>10:boolVar_817730418
+x+y+z=20:boolVar_1699328710

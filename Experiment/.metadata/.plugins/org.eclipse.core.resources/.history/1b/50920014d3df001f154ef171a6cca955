@@ -1,0 +1,53 @@
+spec SpeedControlModule
+
+-- 核心变量(12个)
+env {low,mid,high} speed;  // 速度分级
+env {open,close,emerg} cmd;
+env {ok,alert} temp;
+env {ok,alert} vibe;
+env {ok,alert} comm;
+sys {init,run,cooldown,emerg} mode;
+sys {inc,dec,hold} act;
+sys Int(0..3) lvl;         // 安全等级
+sys Int(0..2) cnt;         // 异常计数器
+
+-- 模式转移(9条)
+gar ini mode=init;
+gar alw mode=init & cmd=open -> next(mode=run);
+gar alw mode=run & cmd=close -> next(mode=cooldown);
+gar alw mode=cooldown & speed=low -> next(mode=init);
+gar alw (temp=alert | vibe=alert) -> next(mode=emerg);
+gar alw mode=emerg & speed=low -> next(mode=init);
+gar alw comm=alert & cnt=2 -> next(mode=emerg);
+gar alw lvl=3 -> next(mode=emerg);
+gar alw mode=run & cmd=emerg -> next(mode=emerg);
+
+-- 安全控制(7条) 
+gar alw mode=run & speed=high -> next(act=dec);
+gar alw temp=alert -> next(act=dec);
+gar alw vibe=alert -> next(act=dec);
+gar alw comm=alert -> next(act=hold);
+gar alw lvl>1 -> next(act=dec);
+gar alw cnt=2 -> next(act=dec);
+gar alw mode=emerg -> next(act=dec);
+
+-- 异常管理(5条)
+gar alw comm=alert -> next(cnt=(cnt<2)?cnt+1:2);
+gar alw temp=alert -> next(lvl+=1);
+gar alw vibe=alert -> next(lvl+=1);
+gar alw mode=init -> next(lvl=0 & cnt=0);
+gar alw speed=low -> next(lvl=(lvl>0)?lvl-1:0);
+
+-- 环境假设(6条)
+asm alw cmd=emerg -> next(cmd!=emerg);
+asm alw temp=alert -> next(temp!=alert);
+asm alw vibe=alert -> next(vibe!=alert);
+asm alw comm=alert -> next(comm!=alert);
+asm alw !(cmd=open & cmd=close);
+asm alw mode=emerg ->  speed=low;
+
+-- 响应链(4条)
+gar alw mode=emerg -> next(act=dec);
+gar alw act=dec ->  next(speed!=high);
+gar alw lvl>0 ->  next(lvl=0);
+gar alw cnt>0 ->  next(cnt=0);

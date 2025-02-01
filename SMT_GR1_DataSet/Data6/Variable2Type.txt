@@ -1,0 +1,6 @@
+foundPolice:boolean
+steal:boolean
+policeX:int
+policeY:int
+thiefX:int
+thiefY:int

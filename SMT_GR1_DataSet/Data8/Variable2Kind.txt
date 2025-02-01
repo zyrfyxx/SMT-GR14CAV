@@ -1,0 +1,4 @@
+obstacleY:env
+obstacleX:env
+robotX:env
+robotY:env

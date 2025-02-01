@@ -1,0 +1,14 @@
+robotX>obstacleX:boolVar_1132968231
+robotY=0:boolVar_542713086
+robotX>0:boolVar_542714016
+robotY>obstacleY:boolVar_1365047707
+robotY>0:boolVar_542713055
+robotX=0:boolVar_542714047
+robotY=obstacleY:boolVar_1561561212
+robotX=obstacleX:boolVar_936454726
+obstacleY>=0:boolVar_789432217
+robotY<obstacleY:boolVar_1758074717
+obstacleX>=0:boolVar_789462008
+obstacleX<=4:boolVar_789463926
+obstacleY<=4:boolVar_789434135
+robotX<obstacleX:boolVar_739941221

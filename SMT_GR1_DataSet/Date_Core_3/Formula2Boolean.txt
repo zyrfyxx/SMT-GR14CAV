@@ -1,0 +1,3 @@
+x>0:boolVar_117290
+x=2:boolVar_117261
+x=1:boolVar_117260

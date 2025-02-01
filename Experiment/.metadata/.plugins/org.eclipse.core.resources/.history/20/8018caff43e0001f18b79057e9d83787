@@ -1,0 +1,25 @@
+/*
+ * Auto-generated Spectra file
+ */
+spec StockStatus			
+			
+-- 生产者-消费者问题的GR(1)规约
+
+-- 环境变量：生产者的生产量和消费者的消费量，均为有界整数
+env Int(0..10) produced;
+env Int(0..10) consumed;
+
+-- 系统变量：库存状态，可以是LOW, OK, HIGH
+sys {LOW, OK, HIGH} stockStatus;
+gar ini stockStatus=OK; -- 初始库存状态为正常
+
+-- 规约：如果生产的数量大于消费的数量，则库存状态不能为LOW
+gar alw produced > consumed -> stockStatus != LOW;
+
+-- 规约：如果消费的数量等于或超过生产的数量，并且超出一定的界限，则库存状态应为LOW
+gar alw consumed >= produced + 2 -> stockStatus = LOW;
+
+-- 规约：确保库存状态反映实际的生产和消费情况，在任何情况下都不能出现负库存的暗示
+gar alw produced >= consumed -> stockStatus != HIGH;
+
+-- 注意：以上规约展示了如何使用有界整数以及避免在这些整数或其相关的逻辑中直接使用next算子。

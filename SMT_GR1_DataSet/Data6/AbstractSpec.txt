@@ -1,0 +1,35 @@
+spec ThiefRunAway			
+			
+env boolean boolVar_1314383744;
+env boolean boolVar_955606577;
+env boolean boolVar_1173129090;
+env boolean boolVar_2123730370;
+env boolean boolVar_1575177078;
+env boolean boolVar_1575147287;
+env boolean boolVar_955578704;
+env boolean boolVar_955576786;
+env boolean boolVar_955608495;
+env boolean boolVar_1575175160;
+env boolean boolVar_363782464;
+env boolean boolVar_1575145369;
+
+
+
+
+env boolean foundPolice;
+sys {up, down, left, right, stay}move;
+sys boolean steal;
+
+asm ini !foundPolice;
+gar ini steal;
+asm alw boolVar_1575147287 & boolVar_1575145369;
+asm alw boolVar_1575177078 & boolVar_1575175160;
+
+asm alw boolVar_955606577 & boolVar_955608495;
+asm alw boolVar_955576786 & boolVar_955578704;
+
+gar alw !foundPolice -> steal & move=stay;
+gar alw foundPolice & (boolVar_2123730370) -> (move != left) & !steal;
+gar alw foundPolice & (boolVar_1314383744) -> (move != right) & !steal;
+gar alw foundPolice & (boolVar_1173129090) -> (move != up) & !steal;
+gar alw foundPolice & (boolVar_363782464) -> (move != down) & !steal;

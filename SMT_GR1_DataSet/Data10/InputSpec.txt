@@ -1,0 +1,20 @@
+spec ComfortZone			
+			
+env int desired_temp_min;
+env int desired_temp_max;
+env int ext_temperature;
+env int current_temp;
+
+sys boolean ac_on;
+
+
+gar ini ac_on = false;
+
+
+
+
+
+gar pRespondsToS(ext_temperature < desired_temp_min - 1, ac_on);
+gar pRespondsToS(ext_temperature > desired_temp_max + 1, !ac_on);
+gar pRespondsToS(current_temp < desired_temp_min - 2, ac_on);
+gar pRespondsToS(current_temp > desired_temp_max + 2, !ac_on);

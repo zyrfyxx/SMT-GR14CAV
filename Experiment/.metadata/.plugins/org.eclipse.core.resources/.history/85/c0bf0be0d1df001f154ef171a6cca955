@@ -1,0 +1,173 @@
+spec SpeedControlModule
+
+-- 环境变量(28个)
+env Int(0..10) speed;  
+env {open,close} ctl;
+env Int(0..100) temp;
+env Bool vibration;
+env Bool powerFail;
+env Int(0..3) safetyLevel;
+env Bool rainSensor;
+env Bool obstacle;
+env Bool networkSignal;
+env Int(0..2) commStatus;
+env Bool brakeSignal;
+env Bool tiltSensor;
+env Int(0..100) humidity;
+env Bool fireAlert;
+env Int(0..5) airPressure;
+env Bool gpsValid;
+env Bool userAuth;
+env Int(0..24) hour;
+env Bool shiftActive;
+env Bool maintenanceReq;
+env Bool remoteCmd;
+env Bool speedLimit;
+env Bool terrainRough;
+env Bool visionError;
+env Bool radarFault;
+env Bool lidarFault;
+env Bool ultrasonicFault;
+
+-- 系统变量(15个)
+sys {init,calib,warmup,cruise,emergency,shutdown,recovery} mode;
+sys {inc,dec,hold} speedCmd;
+sys Bool tempAlert;
+sys Bool vibrationAlert;
+sys Bool commRetry;
+sys Int(0..3) faultLevel;
+sys Bool backupActive;
+sys Bool safetyOverride;
+sys Bool terrainAdapt;
+sys Bool sensorReset;
+sys Bool speedLock;
+sys Int(0..5) errorCode;
+sys Bool diagnosticMode;
+
+-- 核心命题组(共112条)
+gar ini mode=init;
+asm ini ctl=open;
+gar ini speedCmd=hold;
+asm ini temp<70;
+
+-- 模式转移(23条)
+gar alw mode=init & ctl=open -> next(mode=calib);
+gar alw mode=calib & commStatus=2 -> next(mode=warmup);
+gar alw mode=warmup & speed>=5 -> next(mode=cruise);
+gar alw mode=cruise & ctl=close -> next(mode=shutdown);
+gar alw mode=emergency & speed=0 -> next(mode=recovery);
+gar alw mode=recovery & !vibration -> next(mode=init);
+gar alw mode=shutdown & temp<50 -> next(mode=init);
+gar alw obstacle -> next(mode=emergency);
+gar alw fireAlert -> next(mode=emergency);
+gar alw tiltSensor -> next(mode=emergency);
+gar alw powerFail & !backupActive -> next(mode=emergency);
+gar alw faultLevel=3 -> next(mode=emergency);
+gar alw maintenanceReq -> next(mode=shutdown);
+gar alw radarFault & lidarFault -> next(mode=emergency);
+gar alw networkSignal & remoteCmd -> next(mode=calib);
+gar alw hour>22 & shiftActive -> next(mode=shutdown);
+gar alw diagnosticMode -> next(mode=calib);
+gar alw terrainRough & !terrainAdapt -> next(mode=emergency);
+gar alw visionError & next(visionError) -> next(mode=emergency);
+gar alw ultrasonicFault & obstacle -> next(mode=emergency);
+gar alw airPressure<3 & speed>5 -> next(mode=emergency);
+gar alw gpsValid & !networkSignal -> next(mode=cruise);
+gar alw safetyOverride -> next(mode!=emergency);
+
+-- 速度控制(19条)
+gar alw mode=warmup & temp<60 -> next(speedCmd=inc);
+gar alw mode=cruise & ctl=open -> next(speedCmd=hold);
+gar alw mode=emergency -> next(speedCmd=dec);
+gar alw rainSensor -> next(speedCmd=dec);
+gar alw speedLimit & speed>=8 -> next(speedCmd=dec);
+gar alw terrainAdapt & speed>7 -> next(speedCmd=dec);
+gar alw brakeSignal -> next(speedCmd=dec);
+gar alw faultLevel>1 -> next(speedCmd=dec);
+gar alw safetyLevel=0 -> next(speedCmd=dec);
+gar alw humidity>90 -> next(speedCmd=dec);
+gar alw speedLock -> next(speedCmd=hold);
+gar alw mode=calib -> next(speedCmd=hold);
+gar alw backupActive -> next(speedCmd=dec);
+gar alw sensorReset -> next(speedCmd=hold);
+gar alw errorCode>2 -> next(speedCmd=dec);
+gar alw commStatus=0 -> next(speedCmd=hold);
+gar alw userAuth & remoteCmd -> next(speedCmd=inc);
+gar alw shiftActive & hour<8 -> next(speedCmd=inc);
+gar alw diagnosticMode -> next(speedCmd=hold);
+
+-- 安全监控(27条)
+gar alw temp>80 -> next(tempAlert);
+gar alw vibration & next(vibration) -> next(vibrationAlert);
+gar alw commStatus=0 & next(commStatus=0) -> next(commRetry);
+gar alw faultLevel>0 -> next(safetyOverride);
+gar alw radarFault & !backupActive -> next(faultLevel=3);
+gar alw lidarFault & visionError -> next(faultLevel+=1);
+gar alw tempAlert & vibrationAlert -> next(faultLevel=2);
+gar alw powerFail -> next(backupActive);
+gar alw emergency & !brakeSignal -> next(speedLock);
+gar alw terrainRough -> next(terrainAdapt);
+gar alw errorCode>0 -> next(diagnosticMode);
+gar alw maintenanceReq -> next(sensorReset);
+gar alw safetyLevel<2 -> next(speedLock);
+gar alw airPressure<2 -> next(faultLevel+=1);
+gar alw humidity>95 -> next(tempAlert);
+gar alw tiltSensor -> next(speedLock);
+gar alw fireAlert -> next(speedCmd=dec);
+gar alw obstacle & speed>3 -> next(brakeSignal);
+gar alw gpsValid & networkSignal -> next(commStatus=2);
+gar alw ultrasonicFault -> next(backupActive);
+gar alw shiftActive -> next(safetyLevel=3);
+gar alw userAuth -> next(safetyOverride);
+gar alw remoteCmd & !networkSignal -> next(errorCode+=1);
+gar alw diagnosticMode & hour>20 -> next(maintenanceReq);
+gar alw visionError & !radarFault -> next(terrainAdapt);
+gar alw speed>8 & rainSensor -> next(errorCode=4);
+gar alw brakeSignal & speed>0 -> next(speedCmd=dec);
+
+-- 环境假设(21条)
+asm alw temp < 95;
+asm alw ctl=close -> next(ctl=open);
+asm alw !(powerFail & backupActive);
+asm alw vibration -> next(!vibration);
+asm alw obstacle -> next(obstacle U speed=0);
+asm alw networkSignal | commStatus>0;
+asm alw maintenanceReq -> next(hour>1 & hour<5);
+asm alw remoteCmd -> userAuth;
+asm alw safetyLevel=3 -> temp<75;
+asm alw airPressure >0;
+asm alw shiftActive -> hour<12;
+asm alw terrainRough -> speedLimit;
+asm alw visionError -> !radarFault;
+asm alw fireAlert -> temp>60;
+asm alw tiltSensor -> speed>0;
+asm alw gpsValid | networkSignal;
+asm alw brakeSignal -> speed>0;
+asm alw ultrasonicFault -> !obstacle;
+asm alw errorCode>3 -> maintenanceReq;
+asm alw diagnosticMode -> !remoteCmd;
+asm alw humidity>90 -> rainSensor;
+
+-- 响应性需求(22条)
+gar alw emergency -> ev[5] speed=0;
+gar alw obstacle -> ev[3] brakeSignal;
+gar alw tempAlert -> ev[2] speedCmd=dec;
+gar alw commStatus=0 -> ev[5] commRetry;
+gar alw faultLevel>0 -> ev[3] diagnosticMode;
+gar alw maintenanceReq -> ev[10] mode=shutdown;
+gar alw powerFail -> ev[1] backupActive;
+gar alw sensorReset -> ev[2] !sensorReset;
+gar alw terrainAdapt -> ev[3] speed<=6;
+gar alw speedLock -> ev speed=targetSpeed;
+gar alw errorCode>0 -> ev[5] errorCode=0;
+gar alw vibrationAlert -> ev[2] speedCmd=dec;
+gar alw safetyOverride -> ev[5] mode=recovery;
+gar alw rainSensor -> ev[3] speedCmd=dec;
+gar alw shiftActive -> ev[1] safetyLevel=3;
+gar alw remoteCmd -> ev[2] commStatus=2;
+gar alw gpsValid -> ev[3] networkSignal;
+gar alw ultrasonicFault -> ev[2] backupActive;
+gar alw tiltSensor -> ev[1] speedLock;
+gar alw fireAlert -> ev[2] mode=emergency;
+gar alw airPressure<3 -> ev[1] faultLevel+=1;
+gar alw diagnosticMode -> ev[5] !diagnosticMode;

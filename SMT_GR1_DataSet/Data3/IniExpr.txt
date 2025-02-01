@@ -1,0 +1,2 @@
+robotX=1
+robotY=1

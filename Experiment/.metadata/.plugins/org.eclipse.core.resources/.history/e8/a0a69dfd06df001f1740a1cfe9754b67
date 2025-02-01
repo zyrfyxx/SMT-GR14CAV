@@ -1,0 +1,10 @@
+spec TrafficLight
+
+env Int(0..15) carsMain;
+env Int(0..15) carsSide;
+ sys {MAIN, SIDE, NONE} go; 
+ gar ini go = NONE;
+ gar alw carsMain >= carsSide ->
+next(go=MAIN);
+ gar alw carsSide > carsMain ->
+next(go=SIDE);

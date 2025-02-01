@@ -1,0 +1,28 @@
+spec Rover
+sys boolean boolVar_2008411617;
+sys boolean boolVar_2008411591;
+sys boolean boolVar_2131218834;
+env boolean gravityDetected; 
+env boolean found; 
+ 
+sys {SEEK, MEASURE, IDLE} mode; 
+
+asm ini gravityDetected = false;
+asm alw gravityDetected -> next(gravityDetected);
+asm alwEv gravityDetected=true;
+
+gar ini mode = IDLE; 
+gar alw gravityDetected = false ->next(boolVar_2008411617) & next(mode= IDLE);
+gar alw next(mode)=SEEK -> next(boolVar_2008411591) & next(boolVar_2131218834);
+gar alwEv mode != IDLE;
+
+gar alw gravityDetected = true -> next(mode=SEEK);
+
+sys boolean expectFinding;
+
+gar ini !expectFinding;
+gar alw next(expectFinding) = (mode=SEEK | expectFinding & !found);
+
+
+asm alwEv !expectFinding;
+

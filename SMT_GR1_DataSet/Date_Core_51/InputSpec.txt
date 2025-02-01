@@ -1,0 +1,18 @@
+spec TestCore
+
+
+env int x;
+env int y;
+env int z;
+
+env float a;
+env float b;
+env float c;
+
+
+
+
+asm alw x + y + z = 20;
+
+
+

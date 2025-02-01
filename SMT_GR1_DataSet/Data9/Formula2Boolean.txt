@@ -1,0 +1,3 @@
+produced>consumed:boolVar_616117470
+consumed>=produced+2:boolVar_717975342
+produced>=consumed:boolVar_652110037

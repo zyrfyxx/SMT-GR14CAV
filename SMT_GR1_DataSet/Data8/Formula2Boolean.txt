@@ -1,0 +1,6 @@
+robotX>obstacleX:boolVar_1132968231
+robotX=obstacleX:boolVar_936454726
+robotY<obstacleY:boolVar_1758074717
+robotY>obstacleY:boolVar_1365047707
+robotX<obstacleX:boolVar_739941221
+robotY=obstacleY:boolVar_1561561212

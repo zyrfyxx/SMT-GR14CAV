@@ -1,0 +1,28 @@
+spec MoveAndTrack			
+			
+env int obstacleX;
+env int obstacleY;
+env int robotX;
+env int robotY;
+sys {up, down, left, right, stay}move;
+
+asm ini obstacleX=4;
+asm ini obstacleY=4;
+asm alw obstacleX=4;
+asm alw obstacleY=4;
+
+asm ini robotX=1;
+asm ini robotY=1;
+
+
+gar alw (robotX < obstacleX) & (robotY < obstacleY) -> (move=right) | (move=up);
+gar alw (robotX < obstacleX) & (robotY > obstacleY) -> (move=right) | (move=down);
+gar alw (robotX > obstacleX) & (robotY < obstacleY) -> (move=left) | (move=up);
+gar alw (robotX > obstacleX) & (robotY > obstacleY) -> (move=left) | (move=down);
+
+gar alw (robotX < obstacleX) & (robotY = obstacleY) -> (move=right);
+gar alw (robotX = obstacleX) & (robotY > obstacleY) -> (move=down);
+gar alw (robotX > obstacleX) & (robotY = obstacleY) -> (move=left);
+gar alw (robotX = obstacleX) & (robotY < obstacleY) -> (move=up);
+
+gar alw (robotX = obstacleX) & (robotY = obstacleY) -> (move=stay);

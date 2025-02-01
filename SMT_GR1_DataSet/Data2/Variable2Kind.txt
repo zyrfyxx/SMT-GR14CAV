@@ -1,0 +1,4 @@
+found:env
+gravityDetected:env
+expectFinding:sys
+speed:sys

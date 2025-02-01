@@ -1,0 +1,4 @@
+obstacleY:int
+obstacleX:int
+robotX:int
+robotY:int

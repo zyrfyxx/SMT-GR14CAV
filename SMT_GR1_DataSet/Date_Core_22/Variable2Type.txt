@@ -1,0 +1,7 @@
+a:float
+b:float
+c:float
+d:float
+x:int
+y:int
+z:int

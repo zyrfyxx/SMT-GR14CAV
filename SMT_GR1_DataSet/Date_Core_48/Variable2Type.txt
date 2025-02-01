@@ -1,0 +1,3 @@
+a:float
+x:int
+y:int

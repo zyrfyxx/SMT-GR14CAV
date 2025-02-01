@@ -1,0 +1,18 @@
+spec TestCore
+
+
+env boolean boolVar_817730413;
+env boolean boolVar_334294354;
+
+
+
+
+
+
+
+
+
+asm alw boolVar_334294354;
+asm alw boolVar_817730413;
+
+

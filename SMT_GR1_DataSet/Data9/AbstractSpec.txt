@@ -1,0 +1,19 @@
+spec StockStatus		
+			
+env boolean boolVar_717975342;
+env boolean boolVar_652110037;
+env boolean boolVar_616117470;
+
+
+
+
+sys {LOW, OK, HIGH} stockStatus;
+gar ini stockStatus=OK; 
+
+
+gar alw (boolVar_616117470) -> (stockStatus != LOW);
+
+
+gar alw (boolVar_717975342) -> (stockStatus = LOW);
+
+gar alw (boolVar_652110037) -> (stockStatus != HIGH);

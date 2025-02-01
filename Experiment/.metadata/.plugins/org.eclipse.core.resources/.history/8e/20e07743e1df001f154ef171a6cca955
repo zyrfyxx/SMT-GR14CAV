@@ -1,0 +1,96 @@
+/*
+ * Auto-generated Spectra file
+ */
+spec SpeedControl			
+			
+-- Environment variables
+env Int(0..15) tempSensor;       -- Temperature sensor reading (0-15°C)
+env boolean heaterFault;         -- Heater fault indication
+env boolean userOverride;        -- Manual override signal
+env Int(0..3) powerLevel;        -- Available power level (0-3)
+
+-- System variables
+sys { HEATING, COOLING, IDLE } systemMode;
+sys Int(0..10) safetyTimer;      -- Safety countdown timer
+sys boolean powerBoost;          -- Power boost activation
+
+-- Derived predicates
+predicate tempInRange := (tempSensor >= 10 & tempSensor <= 25);
+predicate validPower := (powerLevel >= (if systemMode=HEATING then 1 else 0));
+
+-- Environmental assumptions
+asm ini tempInRange;             -- Initial temperature valid
+asm alwEv tempSensor > 20;       -- Temperature will eventually rise
+asm alwEv tempSensor < 10;       -- Temperature will eventually drop
+
+-- System guarantees
+gar ini systemMode=IDLE;         -- Initial mode is IDLE
+gar alw safetyTimer <= 5;        -- Safety timer never exceeds 5
+
+-- Mode transition rules
+gar alw (
+    (tempSensor < 15 & powerLevel >= 1 & !userOverride) -> 
+    next(systemMode=HEATING)
+) &
+gar alw (
+    (tempSensor > 20 & powerLevel >= 2 & !userOverride) -> 
+    next(systemMode=COOLING)
+) &
+gar alw (
+    (tempSensor >= 15 & tempSensor <= 20) -> 
+    next(systemMode=IDLE)
+);
+
+-- Power management
+gar alw (
+    (systemMode=HEATING & powerLevel < 2) -> 
+    next(powerBoost) & next(safetyTimer=0)
+) &
+gar alw (
+    powerBoost -> (powerLevel + 2) <= 3
+);
+
+-- Fault handling
+gar alw (
+    heaterFault -> 
+    next(systemMode=IDLE) & 
+    next(safetyTimer=5)
+) &
+gar alw (
+    (safetyTimer > 0) -> 
+    next(safetyTimer) = safetyTimer - 1
+);
+
+-- Response pattern for temperature changes
+pattern tempResponse(temp, threshold, mode) {
+    var { NORMAL, ALERT } state;
+    ini state=NORMAL;
+    
+    [](
+        (state=NORMAL & temp >= threshold & mode!=HEATING) -> 
+        next(state=ALERT)
+    ) &
+    [](
+        (state=ALERT & mode=HEATING) -> 
+        next(state=NORMAL)
+    );
+    
+    gar GF state=NORMAL;  -- Eventually returns to normal
+}
+
+-- Apply response pattern
+gar tempResponse(tempSensor, 18, systemMode);
+gar tempResponse(tempSensor, 12, systemMode);
+
+-- Power level monitoring
+monitor Int(1..3) requiredPower {
+    ini requiredPower = 1;
+    trans next(requiredPower) = 
+        case
+            systemMode=HEATING: 2;
+            systemMode=COOLING: 3;
+            else: 1;
+        end;
+}
+
+gar alw powerLevel >= requiredPower;

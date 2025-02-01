@@ -1,0 +1,79 @@
+
+spec ThiefRunComplex
+
+env Int(0..2) policeX;
+env Int(0..2) policeY;
+env Int(0..2) thiefX;
+env Int(0..2) thiefY;
+
+env Int(0..10) time; // 时间维度
+
+env boolean foundPolice;
+env boolean obstacleAt0;
+env boolean obstacleAt1;
+env boolean obstacleAt2;
+env boolean obstacleAt3;
+env boolean obstacleAt4;
+env boolean obstacleAt5;
+env boolean obstacleAt6;
+env boolean obstacleAt7;
+env boolean obstacleAt8; // 特定位置可能有障碍物
+
+sys {up, down, left, right, jump, hide, stay} move; // 更复杂的动作选项
+sys boolean steal;
+sys Int(0..10) energy; // 小偷的能量
+
+// 初始化条件
+asm ini !foundPolice; // 初始能量为满
+gar ini energy = 10;
+gar ini steal;
+
+// 警察和小偷位置边界
+asm alw (policeX >= 0 & policeX <= 2);
+asm alw (policeY >= 0 & policeY <= 2);
+asm ini (policeX = 2 & policeY = 2); // 初始位置
+
+asm alw (thiefX >= 0 & thiefX <= 2);
+asm alw (thiefY >= 0 & thiefY <= 2);
+asm ini (thiefX = 0 & thiefY = 0);
+
+// 随机障碍物初始化
+asm ini (obstacleAt0 = false & obstacleAt1 = false & obstacleAt2 = false &
+         obstacleAt3 = false & obstacleAt4 = true & obstacleAt5 = false &
+         obstacleAt6 = false & obstacleAt7 = false & obstacleAt8 = false);
+
+// 视野和发现规则，考虑障碍物遮挡视线
+gar alw (!foundPolice <-> (
+    (((policeX <= thiefX + 1) & (policeX >= thiefX - 1) & 
+      (policeY <= thiefY + 1) & (policeY >= thiefY - 1)) &
+     !(obstacleAt0 | obstacleAt1 | obstacleAt2 | obstacleAt3 | obstacleAt4 | obstacleAt5 | obstacleAt6 | obstacleAt7 | obstacleAt8)) |
+    ((((policeX - 1) <= thiefX + 1) & ((policeX - 1) >= thiefX - 1) & 
+      ((policeY - 1) <= thiefY + 1) & ((policeY - 1) >= thiefY - 1)) &
+     !(obstacleAt0 | obstacleAt1 | obstacleAt2 | obstacleAt3 | obstacleAt4 | obstacleAt5 | obstacleAt6 | obstacleAt7 | obstacleAt8))
+));
+
+// 小偷偷窃与逃跑策略
+gar alw (!foundPolice -> steal & move = stay);
+gar alw foundPolice & (thiefX > policeX) -> move != left & !steal;
+gar alw foundPolice & (thiefX < policeX) -> move != right & !steal;
+gar alw foundPolice & (thiefY < policeY) -> move != up & !steal;
+gar alw foundPolice & (thiefY > policeY) -> move != down & !steal;
+
+
+
+// 增加能量系统
+gar alw (move = jump -> energy >= 2 & next(energy) = energy - 2);
+gar alw (move = hide -> energy >= 1 & next(energy) = energy - 1);
+gar alw (move = stay | move = up | move = down | move = left | move = right -> next(energy) = energy);
+
+
+
+// 添加道具使用逻辑
+env boolean hasItem;
+sys boolean useItem;
+gar ini hasItem = false;
+gar alw (useItem -> hasItem);
+gar alw (useItem -> next(foundPolice = false) & next(hasItem = false)); // 使用道具后，警察暂时失去目标，并且道具消失
+
+// 增加时间流逝对游戏的影响
+gar alw (time > 5 -> foundPolice);

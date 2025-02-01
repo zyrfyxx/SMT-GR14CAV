@@ -1,0 +1,144 @@
+
+
+spec SpeedControlModule
+
+-- 扩展变量声明
+env Int(0..10) speed;  
+sys {init, warmup, cruise, cooldown, emergency, maintenance} mode; -- 6种操作模式
+sys {speedup, slowdown, keepon} speedC;
+env {open, close} ctl;
+env Int(0..100) temperature;
+env Bool userOverride;
+env Bool vibrationAlert;       -- 新增振动警报
+env Int(0..3) safetyLevel;     -- 新增安全等级(0-3)
+
+-- 历史状态记录
+sys Int(0..5) tempAlertCount;  -- 温度警报累计次数
+sys Int(0..3) consecutiveFault;-- 连续故障计数
+
+-- 初始化约束
+gar ini mode=init;
+asm ini ctl=open;
+asm ini speed=0;
+gar ini speedC=keepon;
+asm ini temperature <= 70;     
+asm ini !userOverride;
+asm ini safetyLevel=3;         -- 初始最高安全等级
+gar ini tempAlertCount=0;
+gar ini consecutiveFault=0;
+
+-- 复合模式转移规则
+grp mode_transitions {
+    -- 启动序列约束
+    gar alw mode=init & ctl=open & safetyLevel=3 -> 
+        next(mode=warmup) & next(speedC=speedup);
+    
+    -- 暖机模式复合条件
+    gar alw mode=warmup & (temperature - prev(temperature)) >5 -> 
+        next(mode=cooldown);
+    
+    -- 巡航模式进入条件
+    gar alw mode=warmup & speed>=5 & temperature<75 & safetyLevel>=2 ->
+        next(mode=cruise) & next(speedC=keepon);
+    
+    -- 多因素紧急触发
+    gar alw (
+        (temperature >=85 & vibrationAlert) | 
+        (safetyLevel=0) | 
+        (userOverride & mode!=maintenance)
+    ) -> next(mode=emergency);
+    
+    -- 维护模式仲裁逻辑
+    gar alw mode=emergency & tempAlertCount>=3 & consecutiveFault<2 -> 
+        next(mode=maintenance);
+    
+    -- 模式互斥性约束
+    gar alw !(
+        (mode=warmup & mode=cruise) |
+        (mode=emergency & mode=maintenance) |
+        (mode=cooldown & mode=cruise)
+    );
+}
+
+-- 时空约束组
+grp spatiotemporal {
+    -- 历史依赖条件
+    gar alw (mode=emergency & prev(mode)=emergency) -> 
+        next(consecutiveFault = consecutiveFault +1);
+    
+    -- 周期累计约束
+    gar alw temperature>=80 -> 
+        next(tempAlertCount = (tempAlertCount <5)? tempAlertCount+1 : 5);
+    
+    -- 时序恢复约束
+    gar alw mode=cooldown -> 
+        next(mode=warmup) when temperature<70 for 3 cycles;
+}
+
+-- 安全等级逻辑
+grp safety_hierarchy {
+    -- 动态安全等级调整
+    gar alw (temperature >=75 & temperature <80) -> 
+        next(safetyLevel = safetyLevel -1);
+    gar alw (temperature <75 & safetyLevel<3) -> 
+        next(safetyLevel = safetyLevel +1);
+    
+    -- 安全等级强制约束
+    gar alw safetyLevel=0 -> next(mode=emergency);
+    gar alw safetyLevel<=1 -> next(speedC=slowdown);
+}
+
+-- 高级环境假设
+grp environmental {
+    -- 振动警报持续性假设
+    asm alw vibrationAlert -> next(!vibrationAlert) within 5 cycles;
+    
+    -- 温度变化二阶约束
+    asm alw (next(temperature) - temperature) - 
+           (temperature - prev(temperature)) <=3;
+    
+    -- 控制信号互斥性
+    asm alw !(ctl=open & ctl=close);
+    asm alw ctl=close -> next(ctl=open);
+}
+
+-- 量子化响应需求
+grp quantum_response {
+    -- 紧急模式量子化响应
+    gar alw mode=emergency -> 
+        next(speedC=slowdown) & 
+        next(next(speedC=slowdown)) until speed=0;
+    
+    -- 维护模式进入条件
+    gar alw mode=maintenance -> 
+        ev[3] (speed=0 & temperature<60 & !vibrationAlert);
+    
+    -- 多周期恢复保证
+    gar alw (mode=emergency & speed=0) -> 
+        ev[5] (mode=init & safetyLevel=3);
+}
+
+-- 故障树约束
+grp fault_tree {
+    -- 复合故障条件
+    gar alw (
+        (consecutiveFault>=2 & tempAlertCount>=2) |
+        (safetyLevel=0 & vibrationAlert)
+    ) -> next(mode=maintenance);
+    
+    -- 故障传播限制
+    gar alw !(mode=maintenance & consecutiveFault>=2);
+}
+
+-- 辅助命题组
+grp auxiliary {
+    -- 速度保持命题
+    gar alw mode=cruise -> 
+        (speed >=5 & speed <=8) when ctl=open;
+    
+    -- 温度平衡命题
+    gar alw (temperature - prev(temperature))^2 <=4 when mode!=emergency;
+    
+    -- 控制信号延迟约束
+    gar alw ctl=close -> next(next(speedC=slowdown));
+}

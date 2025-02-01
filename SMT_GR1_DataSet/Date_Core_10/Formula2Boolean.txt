@@ -1,0 +1,10 @@
+x+y<6:boolVar_112221728
+y=22:boolVar_3664932
+x-y=0:boolVar_112281335
+x+y=1:boolVar_112221754
+x>0:boolVar_117290
+x-y=3:boolVar_112281338
+x=2:boolVar_117261
+x=1:boolVar_117260
+x<0:boolVar_117228
+y=2:boolVar_118222

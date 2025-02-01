@@ -1,0 +1,4 @@
+found:boolean
+gravityDetected:boolean
+expectFinding:boolean
+speed:int

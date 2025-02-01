@@ -1,0 +1,12 @@
+thiefX>policeX:boolVar_2123730370
+policeX>=0:boolVar_1575147287
+policeY>=0:boolVar_1575177078
+thiefX>=0:boolVar_955606577
+thiefY>=0:boolVar_955576786
+thiefX<policeX:boolVar_1314383744
+policeX<=4:boolVar_1575145369
+policeY<=4:boolVar_1575175160
+thiefX<=4:boolVar_955608495
+thiefY<=4:boolVar_955578704
+thiefY<policeY:boolVar_1173129090
+thiefY>policeY:boolVar_363782464

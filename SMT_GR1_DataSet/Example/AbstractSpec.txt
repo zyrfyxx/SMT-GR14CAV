@@ -1,0 +1,14 @@
+spec TrafficLight			
+			
+env boolean boolVar_1782545702;
+sys boolean boolVar_3177084;
+env boolean boolVar_1429656909;
+sys boolean boolVar_3177085;
+
+
+
+
+
+gar alw boolVar_1429656909 ->next (boolVar_3177084);
+gar alw boolVar_1782545702 ->next (boolVar_3177085);
+

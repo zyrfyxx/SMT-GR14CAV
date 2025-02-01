@@ -1,0 +1,23 @@
+spec TestCore
+
+
+env int x;
+env int y;
+
+env float a;
+env float b;
+env float c;
+
+
+
+
+asm alw x + 2*y = 10;
+asm alw 2*x + a > 15;
+asm alw a - b <= 5.5;
+asm alw b + c = 7.5;
+asm alw y * c = 20.0;
+asm alw x*y <= a + 5;
+asm alw a/b >= 2.0;
+asm alw x + y + a + b + c = 25.5;
+
+

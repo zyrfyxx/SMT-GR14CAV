@@ -1,0 +1,7 @@
+x*y<=a+5:boolVar_825742019
+a/b>=2.0:boolVar_1118307423
+b+c=7.5:boolVar_1894598821
+a-b<=5.5:boolVar_1399808357
+x+2*y=10:boolVar_334294354
+2*x+a>15:boolVar_955187124
+y*c=20.0:boolVar_1939259851

@@ -1,0 +1,96 @@
+spec ThiefRun2
+
+// 环境变量
+env Int(0..2) policeX;  // 警察的X坐标
+env Int(0..2) policeY;  // 警察的Y坐标
+env Int(0..2) thiefX;   // 小偷的X坐标
+env Int(0..2) thiefY;   // 小偷的Y坐标
+env boolean foundPolice; // 警察是否发现了小偷
+env Int(0..2) time;      // 时间步长，用于增加时间复杂性
+env boolean alarm;       // 警报状态（开启/关闭）
+
+// 系统变量
+sys {up, down, left, right, stay} move; // 小偷的移动方向
+sys boolean steal;                      // 小偷是否在偷窃
+sys boolean hide;                       // 小偷是否在隐藏
+sys Int(0..10) energy;                  // 小偷的能量值，范围为0到10
+sys boolean isTrapped;                  // 小偷是否被困
+sys boolean canRest;                    // 小偷是否可以休息
+sys boolean isChased;                   // 小偷是否正在被追赶
+sys boolean isRecovering;               // 小偷是否正在恢复能量
+
+// 初始假设
+asm ini !foundPolice;                   // 初始时，警察没有发现小偷
+asm ini !alarm;                         // 初始时，警报关闭
+gar ini energy = 10;                    // 初始时，小偷的能量为10
+gar ini !isTrapped;                     // 初始时，小偷未被困
+gar ini !canRest;                       // 初始时，小偷不能休息
+gar ini !isChased;                      // 初始时，小偷未被追赶
+gar ini !isRecovering;                  // 初始时，小偷未在恢复能量
+
+// 初始保证
+gar ini steal;                          // 初始时，小偷在偷窃
+gar ini !hide;                          // 初始时，小偷没有隐藏
+
+// 关于警察位置的假设
+asm alw policeX >= 0 & policeX <= 2;    // 警察的X坐标始终在0到2之间
+asm alw policeY >= 0 & policeY <= 2;    // 警察的Y坐标始终在0到2之间
+//asm ini policeX = 2;                    // 初始时，警察的X坐标为2
+//asm ini policeY = 2;                    // 初始时，警察的Y坐标为2
+
+// 关于小偷位置的假设
+asm alw thiefX >= 0 & thiefX <= 2;      // 小偷的X坐标始终在0到2之间
+asm alw thiefY >= 0 & thiefY <= 2;      // 小偷的Y坐标始终在0到2之间
+//asm ini thiefX = 0;                     // 初始时，小偷的X坐标为0
+//asm ini thiefY = 1;                     // 初始时，小偷的Y坐标为0
+
+// 关于时间的假设
+asm alw time >= 0 & time <= 2;          // 时间步长始终在0到2之间
+asm ini time = 0;                       // 初始时，时间为0
+
+// 关于能量的假设
+asm alw energy >= 0 & energy <= 10;     // 能量值始终在0到10之间
+
+// 关于小偷行为的保证
+gar alw !foundPolice -> steal & move = stay; // 如果未被发现，继续偷窃并保持不动
+gar alw foundPolice & (thiefX > policeX) -> (move != left) & !steal; // 如果被发现且小偷在警察右侧，不能向左移动且停止偷窃
+gar alw foundPolice & (thiefX < policeX) -> (move != right) & !steal; // 如果被发现且小偷在警察左侧，不能向右移动且停止偷窃
+gar alw foundPolice & (thiefY < policeY) -> (move != up) & !steal;    // 如果被发现且小偷在警察下方，不能向上移动且停止偷窃
+gar alw foundPolice & (thiefY > policeY) -> (move != down) & !steal;  // 如果被发现且小偷在警察上方，不能向下移动且停止偷窃
+
+// 关于隐藏的保证
+gar alw foundPolice & (thiefX = policeX & thiefY = policeY) -> hide; // 如果小偷与警察在同一位置，则隐藏
+gar alw hide & (thiefX != policeX | thiefY != policeY) -> !hide;     // 如果小偷离开警察位置，则停止隐藏
+
+// 关于能量消耗的保证
+gar alw move != stay -> next(energy) = energy - 1; // 如果小偷移动，则能量减1
+gar alw steal -> next(energy) = energy - 1;        // 如果小偷偷窃，则能量减1
+gar alw hide -> next(energy) = energy - 1;         // 如果小偷隐藏，则能量减1
+
+// 关于能量耗尽的保证
+gar alw energy = 0 -> move = stay & !steal & !hide; // 如果能量耗尽，则停止移动、偷窃和隐藏
+
+// 关于被困的保证
+gar alw (thiefX = 0 & thiefY = 0) & (policeX = 0 & policeY = 1) & (policeX = 1 & policeY = 0) -> isTrapped; // 如果小偷在角落且被警察包围，则被困
+gar alw isTrapped -> move = stay & !steal & !hide; // 如果被困，则停止所有动作
+
+// 关于休息和恢复能量的保证
+gar alw !isChased & energy < 10 & time = 2 -> canRest; // 如果未被追赶且能量不足，且时间达到2，则可以休息
+gar alw canRest & time = 0 -> next(energy) = energy + 2 & !canRest; // 如果休息，则恢复2点能量，并重置休息状态
+gar alw canRest -> move = stay & !steal & !hide; // 如果正在休息，则停止所有动作
+
+// 关于被追赶的保证
+gar alw foundPolice & (thiefX != policeX | thiefY != policeY) -> isChased; // 如果被发现且小偷与警察不在同一位置，则被追赶
+gar alw isChased & time = 2 -> next(isChased) = false; // 如果被追赶且时间达到2，则停止被追赶状态
+
+// 关于恢复能量的保证
+gar alw isRecovering -> next(energy) = energy + 1; // 如果正在恢复能量，则每步增加1点能量
+gar alw energy = 10 -> !isRecovering;         // 如果能量已满，则停止恢复
+
+// 关于警报的保证
+gar alw alarm -> !steal & !hide;                           // 如果警报开启，则停止偷窃和隐藏
+gar alw !alarm & foundPolice -> alarm;                     // 如果警察发现小偷，则触发警报
+
+// 关于时间的保证
+gar alw time < 2 -> (next(time) = time + 1);                    // 时间步长递增，直到达到2
+gar alw time = 2 -> next(time = 0);                             // 时间达到2后重置为0

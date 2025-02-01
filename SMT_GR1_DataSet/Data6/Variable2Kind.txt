@@ -1,0 +1,6 @@
+foundPolice:env
+steal:sys
+policeX:env
+policeY:env
+thiefX:env
+thiefY:env

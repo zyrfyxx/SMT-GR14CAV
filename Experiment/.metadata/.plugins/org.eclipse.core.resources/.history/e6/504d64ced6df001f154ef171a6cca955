@@ -1,0 +1,106 @@
+spec T5H2
+
+
+
+env boolean carMain;
+env boolean carSide;
+env Int(0..5) carsMain;
+env Int(0..5) carsSide;
+ env boolean pedestrianBtn;
+ env boolean ambulanceMain;
+
+ sys {MAIN , SIDE , NONE} go;
+ sys boolean greenMain;
+ sys boolean greenSide;
+ sys boolean greenPedestrian;
+
+ predicate excl( boolean p , boolean q):
+ !(p & q);
+
+ gar alw excl(greenMain , greenSide) &
+ excl( greenPedestrian , greenSide);
+
+ define streetsEmpty :=
+ !carSide & !carMain & !ambulanceMain;
+
+ asm ini streetsEmpty;
+ asm ini carSide= false & carMain= false ;
+ asm alwEv carSide;
+ asm alwEv carMain;
+ asm alwEv ONCE carSide;
+
+ gar ini go=NONE;
+ gar alw carsMain >= carsSide implies
+ next (go=MAIN);
+ gar alw carsSide > carsMain implies
+ next (go=SIDE);
+ gar alw streetsEmpty implies
+ !greenMain & !greenSide;
+ gar alw !(greenMain & greenSide);
+ gar alwEv carSide & greenSide;
+ gar alwEv carMain & greenMain;
+
+ monitor boolean needGreenMain {
+ ini needGreenMain =
+ (pedestrianBtn & !greenPedestrian);
+ trans next (needGreenMain) =
+ ((needGreenMain | pedestrianBtn) &
+ !greenPedestrian);
+ }
+ gar alwEv !needGreenMain;
+
+ counter ambulanceWait (0..5) {
+ inc: ambulanceMain & !greenMain;
+ reset: greenMain;
+ overflow: keep;
+ }
+ gar alw ambulanceWait < 5;
+
+gar pRespondsToS( carMain , greenMain);
+gar pRespondsToS( carSide , greenSide);
+
+pattern pRespondsToS(p, s) {
+  var { S0, S1} state;
+
+  -- initial assignments: initial state
+  state=S0;
+
+  -- safety this and next state
+  G ((state=S0 & ((!p) | (p & s)) & next(state=S0)) |
+  (state=S0 & (p & !s) & next(state=S1)) |
+  (state=S1 & (s) & next(state=S0)) |
+  (state=S1 & (!s) & next(state=S1)));
+
+  -- equivalence of satisfaction
+  GF (state=S0);
+}
+
+
+env Int(0..2)policeX;
+env Int(0..2)policeY;
+env Int(0..2)thiefX;
+env Int(0..2)thiefY;
+env boolean foundPolice;
+sys {up, down, left, right, stay}move;
+sys boolean steal;
+
+asm ini !foundPolice;
+gar ini steal;
+
+
+asm alw policeX>=0 & policeX<=2;
+asm alw policeY>=0 & policeY<=2;
+asm ini policeX=2;
+asm ini policeY=2;
+
+
+asm alw thiefX>=0 & thiefX<=2;
+asm alw thiefY>=0 & thiefY<=2;
+asm ini thiefX=0;
+asm ini thiefY=0;
+
+gar alw !foundPolice -> steal & move=stay;
+gar alw foundPolice & (thiefX > policeX) -> (move != left) & !steal;
+gar alw foundPolice & (thiefX < policeX) -> (move != right) & !steal;
+gar alw foundPolice & (thiefY < policeY) -> (move != up) & !steal;
+gar alw foundPolice & (thiefY > policeY) -> (move != down) & !steal;

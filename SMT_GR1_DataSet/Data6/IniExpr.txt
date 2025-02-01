@@ -1,0 +1,4 @@
+policeY=4
+policeX=4
+thiefY=4
+thiefX=2

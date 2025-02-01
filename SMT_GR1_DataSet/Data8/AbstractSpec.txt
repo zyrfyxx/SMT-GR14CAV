@@ -1,0 +1,26 @@
+spec MoveAndTrack_No_Init_Position			
+			
+env boolean boolVar_1365047707;
+env boolean boolVar_1132968231;
+env boolean boolVar_936454726;
+env boolean boolVar_1561561212;
+env boolean boolVar_1758074717;
+env boolean boolVar_739941221;
+
+
+
+
+sys {up, down, left, right, stay}move;
+
+
+gar alw (boolVar_739941221) & (boolVar_1758074717) -> (move=right) | (move=up);
+gar alw (boolVar_739941221) & (boolVar_1365047707) -> (move=right) | (move=down);
+gar alw (boolVar_1132968231) & (boolVar_1758074717) -> (move=left) | (move=up);
+gar alw (boolVar_1132968231) & (boolVar_1365047707) -> (move=left) | (move=down);
+
+gar alw (boolVar_739941221) & (boolVar_1561561212) -> (move=right);
+gar alw (boolVar_936454726) & (boolVar_1365047707) -> (move=down);
+gar alw (boolVar_1132968231) & (boolVar_1561561212) -> (move=left);
+gar alw (boolVar_936454726) & (boolVar_1758074717) -> (move=up);
+
+gar alw (boolVar_936454726) & (boolVar_1561561212) -> (move=stay);

@@ -1,0 +1,4 @@
+robotY=0:boolVar_542713086
+robotY=35:boolVar_355763664
+robotX=35:boolVar_355733873
+robotX=0:boolVar_542714047

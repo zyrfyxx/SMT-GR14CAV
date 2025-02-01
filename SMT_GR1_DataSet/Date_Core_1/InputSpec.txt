@@ -1,0 +1,12 @@
+spec TestCore
+
+
+env int x;
+env int y;
+
+
+
+
+asm alw x=1;
+
+

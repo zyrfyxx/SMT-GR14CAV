@@ -1,0 +1,10 @@
+x+y=15:boolVar_816092869
+a*x>10:boolVar_1475515698
+a>=2.5:boolVar_1458814567
+x-y>=3:boolVar_814244496
+x*y<a+10:boolVar_826762782
+x+y+a=30.5:boolVar_251620325
+y-x<=5:boolVar_785647056
+x+2*y=10:boolVar_334294354
+y+a=20.0:boolVar_1525462066
+x*a>20:boolVar_817730387

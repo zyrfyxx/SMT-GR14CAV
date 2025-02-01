@@ -1,0 +1,19 @@
+spec TestCore
+
+
+env int x;
+env int y;
+
+
+
+
+asm alw x=1;
+asm alw x=2;
+asm alw x>0;
+asm alw x<0;
+asm alw x+y<6;
+asm alw y=2;
+asm alw x-y=3;
+asm alw x-y=0;
+asm alw y=22;
+

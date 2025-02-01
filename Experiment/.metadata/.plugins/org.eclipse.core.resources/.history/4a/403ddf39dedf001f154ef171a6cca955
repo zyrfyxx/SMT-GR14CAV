@@ -1,0 +1,54 @@
+/*
+ * Auto-generated Spectra file
+ */
+spec SpeedControl			
+			
+env Int(0..10)speed;
+sys {mode0, mode1, mode2, mode5} mode;
+sys {speedup, slowdown, keepon} speedC;
+env {open, close}ctl;
+
+gar ini mode=mode0;
+asm ini ctl=open;
+asm ini speed=0;
+gar ini speedC=speedup;
+
+gar alw mode=mode0 & ctl=open -> next(mode=mode1) & next(speedC=speedup);
+gar alw mode=mode1 & !(speed>=5) &ctl=open -> next(speedC=speedup);
+gar alw mode=mode1 & speed>=5 &ctl=open -> next(mode=mode2) & next(speedC=keepon);
+gar alw mode=mode2 & ctl=open -> next(speedC=keepon);
+gar alw mode=mode2 & ctl=close -> next(mode=mode5) & next(speedC=slowdown);
+
+
+
+// 新增命题
+sys {sensorOK, sensorFail} sensorStatus; // 传感器状态
+sys {alarmOn, alarmOff} alarm; // 报警器状态
+env {signalStrong, signalWeak} signalQuality; // 信号质量
+sys {manualOverrideOn, manualOverrideOff} manualOverride; // 手动优先状态
+sys {batteryLow, batteryHigh} batteryLevel; // 电池电量水平
+sys {systemCheckPass, systemCheckFail} systemCheck; // 系统检查结果
+env {externalPowerConnected, externalPowerDisconnected} powerSupply; // 外部电源连接状态
+
+//gar ini mode=mode0 & sensorStatus=sensorOK & alarm=alarmOff & manualOverride=manualOverrideOff & batteryLevel=batteryHigh & systemCheck=systemCheckPass & powerSupply=externalPowerDisconnected;
+
+asm ini signalQuality=signalStrong;
+
+
+
+
+// 原有规则
+gar alw mode=mode0 & ctl=open -> next(mode=mode1) & next(speedC=speedup);
+gar alw mode=mode1 & !(speed>=5) &ctl=open -> next(speedC=speedup);
+gar alw mode=mode1 & speed>=5 &ctl=open -> next(mode=mode2) & next(speedC=keepon);
+gar alw mode=mode2 & ctl=open -> next(speedC=keepon);
+gar alw mode=mode2 & ctl=close -> next(mode=mode5) & next(speedC=slowdown);
+
+// 新增约束
+gar alw sensorStatus=sensorFail -> next(alarm=alarmOn); // 如果传感器失败，触发报警
+gar alw manualOverride=manualOverrideOn -> next(speedC=keepon); // 如果手动优先开启，则保持速度
+gar alw batteryLevel=batteryLow -> next(systemCheck=systemCheckFail); // 如果电池电量低，则系统检查失败
+gar alw systemCheck=systemCheckFail -> next(alarm=alarmOn); // 如果系统检查失败，则触发报警
+gar alw powerSupply=externalPowerConnected & batteryLevel=batteryLow -> next(batteryLevel=batteryHigh); // 如果外部电源连接且电池电量低，则充电
+gar alw signalQuality=signalWeak -> next(sensorStatus=sensorFail); // 如果信号质量弱，则传感器可能失败
+gar alw alarm=alarmOn -> next(manualOverride=manualOverrideOn); // 如果报警触发，则启用手动优先

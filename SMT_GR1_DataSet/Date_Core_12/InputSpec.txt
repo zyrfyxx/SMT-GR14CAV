@@ -1,0 +1,17 @@
+spec TestCore
+
+
+env int x;
+env int y;
+
+env float a;
+env float b;
+env float c;
+
+
+
+
+asm alw x + 2*y = 10;
+asm alw 2*x + a > 15;
+
+

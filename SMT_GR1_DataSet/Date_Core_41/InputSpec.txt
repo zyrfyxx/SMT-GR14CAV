@@ -1,0 +1,14 @@
+spec TestCore
+
+
+env int x;
+env int y;
+
+env float a;
+
+
+
+
+asm alw x + y = 15;
+
+

@@ -1,0 +1,14 @@
+spec PlaceControlModule		
+			
+env boolean boolVar_355763664;
+env boolean boolVar_542713086;
+env boolean boolVar_355733873;
+env boolean boolVar_542714047;
+
+
+sys {Up,Down,Left,Right,Stay} move;
+
+gar alw boolVar_542714047 -> next(move != Left);
+gar alw boolVar_355733873 -> next(move != Right);
+gar alw boolVar_542713086 -> next(move != Down);
+gar alw boolVar_355763664 -> next(move != Up);

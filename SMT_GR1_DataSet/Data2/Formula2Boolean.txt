@@ -1,0 +1,3 @@
+speed>0:boolVar_2008411591
+speed=5:boolVar_2008411617
+speed<70:boolVar_2131218834
