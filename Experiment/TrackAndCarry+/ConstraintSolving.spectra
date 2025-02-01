@@ -145,30 +145,7 @@ gar ini action=release;
 gar ini mode=search;
 
 
-gar alw (boolVar_739941221) & (boolVar_1758074717) & (mode=search) -> (next(move=right) | next(move=up) )& next(mode=search) & next(action=release);
-gar alw (boolVar_739941221) & (boolVar_1365047707) & (mode=search) -> (next(move=right) | next(move=down) )& next(mode=search) & next(action=release);
-gar alw (boolVar_1132968231) & (boolVar_1758074717) & (mode=search) -> (next(move=left) | next(move=up) )& next(mode=search) & next(action=release);
-gar alw (boolVar_1132968231) & (boolVar_1365047707) & (mode=search) -> (next(move=left) | next(move=down) )& next(mode=search) & next(action=release);
-
-gar alw (boolVar_739941221) & (boolVar_1561561212) & (mode=search) & (action=release) -> next(move=right) & next(mode=search) & next(action=release);
-gar alw (boolVar_936454726) & (boolVar_1365047707) & (mode=search) & (action=release) -> next(move=down) & next(mode=search) & next(action=release);
-gar alw (boolVar_1132968231) & (boolVar_1561561212) & (mode=search) & (action=release) -> next(move=left) & next(mode=search) & next(action=release);
-gar alw (boolVar_936454726) & (boolVar_1758074717) & (mode=search) & (action=release) -> next(move=up) & next(mode=search) & next(action=release);
-
-gar alw (boolVar_936454726) & (boolVar_1561561212) & (mode=search) & (action=release) -> next(move=stay) & next(action=catch) & next(mode=carry);
-
-
-gar alw action=catch & mode=carry & (boolVar_542714016 & boolVar_542713055) -> (next(move=left) | next(move=down)) & next(action=catch) & next(mode=carry); 
-
-gar alw action=catch & mode=carry & (boolVar_542714016 & boolVar_542713086) -> next(move=left)  & next(action=catch) & next(mode=carry); 
-
-gar alw action=catch & mode=carry & (boolVar_542714047 & boolVar_542713055) -> next(move=down) & next(action=catch) & next(mode=carry); 
-
-
-
-gar alw action=catch & mode=carry & boolVar_542714047 & boolVar_542713086 -> next(action=release) | next(mode=search);
-
-env boolean StoB_REQ0;
+	env boolean StoB_REQ0;
 	env boolean StoB_REQ1;
 	env boolean StoB_REQ2;
 	env boolean StoB_REQ3;
@@ -1106,4 +1083,3 @@ guarantee
 	GF((StoB_REQ19=true <-> BtoS_ACK19=true));
 guarantee
 	GF((stateG12=false));
-

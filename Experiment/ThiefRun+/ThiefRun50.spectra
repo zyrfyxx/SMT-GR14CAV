@@ -27,6 +27,8 @@ gar alw foundPolice & (thiefX > policeX) -> (move != left) & !steal;
 gar alw foundPolice & (thiefX < policeX) -> (move != right) & !steal;
 gar alw foundPolice & (thiefY < policeY) -> (move != up) & !steal;
 gar alw foundPolice & (thiefY > policeY) -> (move != down) & !steal;
+
+
 	env boolean StoB_REQ0;
 	env boolean StoB_REQ1;
 	env boolean StoB_REQ2;
@@ -965,4 +967,3 @@ guarantee
 	GF((StoB_REQ19=true <-> BtoS_ACK19=true));
 guarantee
 	GF((stateG12=false));
-

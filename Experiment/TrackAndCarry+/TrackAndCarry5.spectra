@@ -43,7 +43,9 @@ gar alw action=catch & mode=carry & (robotX=0 & robotY>0) -> next(move=down) & n
 
 
 gar alw action=catch & mode=carry & robotX=0 & robotY=0 -> next(action=release) | next(mode=search);
-env boolean StoB_REQ0;
+
+
+	env boolean StoB_REQ0;
 	env boolean StoB_REQ1;
 	env boolean StoB_REQ2;
 	env boolean StoB_REQ3;
@@ -981,4 +983,3 @@ guarantee
 	GF((StoB_REQ19=true <-> BtoS_ACK19=true));
 guarantee
 	GF((stateG12=false));
-

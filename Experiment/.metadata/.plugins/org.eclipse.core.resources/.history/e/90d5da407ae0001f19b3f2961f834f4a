@@ -1,0 +1,108 @@
+spec ThiefRun2
+
+-- Environment Variables --
+env Int(0..10) policeX;     -- 主警察坐标
+env Int(0..10) policeY;
+env Int(0..10) patrolX;     -- 巡逻警察坐标
+env Int(0..10) patrolY;
+env boolean foundPolice;    -- 发现状态
+env boolean alarmActive;    -- 警报状态
+
+-- System Variables --
+sys {up, down, left, right, stay, hide} move;
+sys boolean useKey;
+sys Int(0..3) keysHeld;     -- 携带钥匙(0-3)
+sys Int(0..10) energy := 10;-- 能量系统
+
+-- 常量定义 --
+define exitX = 10;          -- 出口坐标
+define exitY = 0;
+define keyPositions = [(2,5), (8,3), (5,9)]; -- 钥匙位置
+
+-- 初始条件 --
+asm ini policeX = 10 & policeY = 10;
+asm ini patrolX = 5 & patrolY = 5;
+asm ini !foundPolice;
+asm ini !alarmActive;
+
+gar ini keysHeld = 0;
+gar ini energy = 10;
+gar ini move = stay;
+
+-- 环境约束 --
+asm alw (
+    -- 巡逻警察X轴移动规则
+    ( (patrolX = 0)  -> (next patrolX) = 1 ) &
+    ( (patrolX = 10) -> (next patrolX) = 9 ) &
+    ( (patrolX > 0 & patrolX < 10) ->
+      ( (next patrolX) = patrolX + 1 | (next patrolX) = patrolX - 1 )
+    ) &
+    
+    -- 巡逻警察Y轴移动规则
+    ( (patrolY = 0)  -> (next patrolY) = 1 ) &
+    ( (patrolY = 10) -> (next patrolY) = 9 ) &
+    ( (patrolY > 0 & patrolY < 10) ->
+      ( (next patrolY) = patrolY + 1 | (next patrolY) = patrolY - 1 )
+    )
+);
+
+-- 视线检测 --
+asm alw (
+    ( (thiefX = policeX | thiefY = policeY) &
+      (abs(thiefX - policeX) + abs(thiefY - policeY) > 3) )
+    -> (next foundPolice)
+);
+
+-- 系统保证 --
+gar alw (
+    -- 基础移动规则
+    ( (move = up)    -> (next thiefY) = thiefY + 1 ) &
+    ( (move = down)  -> (next thiefY) = thiefY - 1 ) &
+    ( (move = left)  -> (next thiefX) = thiefX - 1 ) &
+    ( (move = right) -> (next thiefX) = thiefX + 1 ) &
+    ( (move = stay)  -> (next thiefX) = thiefX & (next thiefY) = thiefY ) &
+    
+    -- 钥匙收集系统
+    ( (thiefX = 2 & thiefY = 5 & keysHeld < 3) -> (next keysHeld) = keysHeld + 1 ) &
+    ( (thiefX = 8 & thiefY = 3 & keysHeld < 3) -> (next keysHeld) = keysHeld + 1 ) &
+    ( (thiefX = 5 & thiefY = 9 & keysHeld < 3) -> (next keysHeld) = keysHeld + 1 ) &
+    ( !((thiefX=2 & thiefY=5) | (thiefX=8 & thiefY=3) | (thiefX=5 & thiefY=9)) 
+      -> (next keysHeld) = keysHeld ) &
+    
+    -- 能量管理系统
+    ( (move != stay) -> 
+      ( (energy > 0) & (next energy) = energy - 1 ) ) &
+    ( (move = stay)  -> 
+      ( (next energy) = (energy < 10 ? energy + 1 : energy) ) ) &
+    
+    -- 警报交互
+    ( (thiefX = 5 & thiefY = 5 & !useKey) -> (next alarmActive) ) &
+    ( (useKey & keysHeld > 0) -> (next alarmActive) = false ) &
+    
+    -- 躲避逻辑
+    ( foundPolice -> 
+      ( (thiefX > policeX -> move != left) &
+        (thiefX < policeX -> move != right) &
+        (thiefY > policeY -> move != down) &
+        (thiefY < policeY -> move != up) &
+        (abs(thiefX - patrolX) + abs(thiefY - patrolY) < 3 -> move = hide)
+      )
+    )
+);
+
+-- 边界约束 --
+gar alw (
+    (thiefX >= 0 & thiefX <= 10) &
+    (thiefY >= 0 & thiefY <= 10) &
+    (energy >= 0 & energy <= 10)
+);
+
+-- 胜利条件 --
+gar alw (
+    (thiefX = exitX & thiefY = exitY & keysHeld >= 2 & !alarmActive)
+    -> (next move) = stay
+);
+
+-- 公平性约束 --
+gar alw (energy > 0);                  -- 系统必须维持能量
+asm alw <>!(alarmActive & keysHeld=0); -- 环境不能永远封锁出口

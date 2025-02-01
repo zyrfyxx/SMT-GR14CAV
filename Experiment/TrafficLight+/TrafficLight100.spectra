@@ -72,6 +72,8 @@ pattern pRespondsToS(p, s) {
   -- equivalence of satisfaction
   GF (state=S0);
 }
+
+
 	env boolean StoB_REQ0;
 	env boolean StoB_REQ1;
 	env boolean StoB_REQ2;

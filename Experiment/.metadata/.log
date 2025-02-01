@@ -1111,3 +1111,115 @@ java.lang.Exception: Could not delete metadata for '/ProductConsumer'.
 	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2473)
 	at org.eclipse.ltk.internal.ui.refactoring.WorkbenchRunnableAdapter.run(WorkbenchRunnableAdapter.java:89)
 	at org.eclipse.jface.operation.ModalContext$ModalContextThread.run(ModalContext.java:124)
+
+!ENTRY org.eclipse.core.jobs 2 2 2025-02-01 14:05:23.495
+!MESSAGE Job found still running after platform shutdown.  Jobs should be canceled by the plugin that scheduled them during shutdown: tau.smlab.syntech.ui.jobs.SynthesizeConcreteControllerJob
+!SESSION 2025-02-01 14:07:33.674 -----------------------------------------------
+eclipse.buildId=4.31.0.20240307-1200
+java.version=17.0.11
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=zh_CN
+Framework arguments:  -product org.eclipse.epp.package.dsl.product
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.dsl.product
+
+!ENTRY ch.qos.logback.classic 1 0 2025-02-01 14:08:16.465
+!MESSAGE Activated before the state location was initialized. Retry after the state location is initialized.
+
+!ENTRY ch.qos.logback.classic 1 0 2025-02-01 14:08:20.154
+!MESSAGE Logback config file: C:\Users\kokaze\OneDrive\文档\SMT-GR(1)\CAV\Experiment\.metadata\.plugins\org.eclipse.m2e.logback\logback.2.6.0.20240217-1525.xml
+
+!ENTRY org.eclipse.egit.ui 2 0 2025-02-01 14:08:26.818
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\kokaze'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY org.apache.log4j 4 0 2025-02-01 14:12:22.802
+!MESSAGE org.eclipse.xtext.ui.editor.hover.html.DefaultEObjectHoverProvider  - Error on computation of hover information. No hover information available for tau.smlab.syntech.spectra.impl.VarDeclImpl@414e275a (name: state) at offset: 620, length: 5
+
+!STACK 0
+java.lang.NullPointerException: Cannot invoke "tau.smlab.syntech.spectra.Var.getKind()" because "var" is null
+	at tau.smlab.syntech.ui.hover.SpectraEObjectHoverProvider.getFirstLine(SpectraEObjectHoverProvider.java:86)
+	at org.eclipse.xtext.ui.editor.hover.html.DefaultEObjectHoverProvider.getHoverInfoAsHtml(DefaultEObjectHoverProvider.java:84)
+	at org.eclipse.xtext.ui.editor.hover.html.DefaultEObjectHoverProvider.getHoverInfo(DefaultEObjectHoverProvider.java:96)
+	at org.eclipse.xtext.ui.editor.hover.html.DefaultEObjectHoverProvider$2.getInfo(DefaultEObjectHoverProvider.java:542)
+	at org.eclipse.xtext.ui.editor.hover.DispatchingEObjectTextHover.getHoverInfo(DispatchingEObjectTextHover.java:42)
+	at org.eclipse.xtext.ui.editor.hover.AbstractEObjectHover$2.exec(AbstractEObjectHover.java:95)
+	at org.eclipse.xtext.ui.editor.hover.AbstractEObjectHover$2.exec(AbstractEObjectHover.java:1)
+	at org.eclipse.xtext.util.concurrent.IReadAccess.lambda$0(IReadAccess.java:57)
+	at org.eclipse.xtext.resource.OutdatedStateManager.exec(OutdatedStateManager.java:70)
+	at org.eclipse.xtext.ui.editor.model.XtextDocument$XtextDocumentLocker.internalReadOnly(XtextDocument.java:525)
+	at org.eclipse.xtext.ui.editor.model.XtextDocument$XtextDocumentLocker.readOnly(XtextDocument.java:497)
+	at org.eclipse.xtext.ui.editor.model.XtextDocument.readOnly(XtextDocument.java:136)
+	at org.eclipse.xtext.util.concurrent.IReadAccess.tryReadOnly(IReadAccess.java:53)
+	at org.eclipse.xtext.util.concurrent.IReadAccess.tryReadOnly(IReadAccess.java:71)
+	at org.eclipse.xtext.ui.editor.hover.AbstractEObjectHover.getHoverInfo2(AbstractEObjectHover.java:90)
+	at org.eclipse.xtext.ui.editor.hover.AbstractCompositeHover.getHoverInfo2(AbstractCompositeHover.java:95)
+	at org.eclipse.jface.text.TextViewerHoverManager$1.run(TextViewerHoverManager.java:155)
+
+!ENTRY org.eclipse.core.jobs 2 2 2025-02-01 14:22:03.471
+!MESSAGE Job found still running after platform shutdown.  Jobs should be canceled by the plugin that scheduled them during shutdown: tau.smlab.syntech.ui.jobs.SynthesizeConcreteControllerJob
+!SESSION 2025-02-01 14:22:11.205 -----------------------------------------------
+eclipse.buildId=4.31.0.20240307-1200
+java.version=17.0.11
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=zh_CN
+Framework arguments:  -product org.eclipse.epp.package.dsl.product
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.dsl.product
+
+!ENTRY ch.qos.logback.classic 1 0 2025-02-01 14:22:12.902
+!MESSAGE Activated before the state location was initialized. Retry after the state location is initialized.
+
+!ENTRY ch.qos.logback.classic 1 0 2025-02-01 14:22:17.652
+!MESSAGE Logback config file: C:\Users\kokaze\OneDrive\文档\SMT-GR(1)\CAV\Experiment\.metadata\.plugins\org.eclipse.m2e.logback\logback.2.6.0.20240217-1525.xml
+
+!ENTRY org.eclipse.egit.ui 2 0 2025-02-01 14:22:26.504
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\kokaze'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY org.eclipse.core.jobs 2 2 2025-02-01 14:27:55.346
+!MESSAGE Job found still running after platform shutdown.  Jobs should be canceled by the plugin that scheduled them during shutdown: tau.smlab.syntech.ui.jobs.SynthesizeConcreteControllerJob
+!SESSION 2025-02-01 14:27:55.981 -----------------------------------------------
+eclipse.buildId=4.31.0.20240307-1200
+java.version=17.0.11
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=zh_CN
+Framework arguments:  -product org.eclipse.epp.package.dsl.product
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.dsl.product
+
+!ENTRY ch.qos.logback.classic 1 0 2025-02-01 14:27:58.516
+!MESSAGE Activated before the state location was initialized. Retry after the state location is initialized.
+
+!ENTRY ch.qos.logback.classic 1 0 2025-02-01 14:28:02.746
+!MESSAGE Logback config file: C:\Users\kokaze\OneDrive\文档\SMT-GR(1)\CAV\Experiment\.metadata\.plugins\org.eclipse.m2e.logback\logback.2.6.0.20240217-1525.xml
+
+!ENTRY org.eclipse.egit.ui 2 0 2025-02-01 14:28:11.870
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\kokaze'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+!SESSION 2025-02-01 14:29:02.409 -----------------------------------------------
+eclipse.buildId=4.31.0.20240307-1200
+java.version=17.0.11
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=zh_CN
+Framework arguments:  -product org.eclipse.epp.package.dsl.product
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.dsl.product
+
+!ENTRY ch.qos.logback.classic 1 0 2025-02-01 14:29:04.098
+!MESSAGE Activated before the state location was initialized. Retry after the state location is initialized.
+
+!ENTRY ch.qos.logback.classic 1 0 2025-02-01 14:29:06.588
+!MESSAGE Logback config file: C:\Users\kokaze\OneDrive\文档\SMT-GR(1)\CAV\Experiment\.metadata\.plugins\org.eclipse.m2e.logback\logback.2.6.0.20240217-1525.xml
+
+!ENTRY org.eclipse.egit.ui 2 0 2025-02-01 14:29:12.978
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\kokaze'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
